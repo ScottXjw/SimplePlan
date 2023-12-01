@@ -1,4 +1,4 @@
-[English](https://github.com/siyuan-note/widget-sample/blob/main/README.md)
+ [English](README.md) 
 
 # SimplePlan
 
