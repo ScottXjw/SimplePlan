@@ -1,102 +1,29 @@
 [English](https://github.com/siyuan-note/widget-sample/blob/main/README.md)
 
-# 思源笔记挂件示例
+# SimplePlan
 
 ## 开始
 
-* 通过 <kbd>Use this widget</kbd> 按钮将该库文件复制到你自己的库中，请注意库名必须和挂件名称一致，默认分支必须为 `main`
-* 将你的库克隆到本地开发文件夹中，为了方便可以直接将开发文件夹放置在 `{workspace}/conf/appearance/widgets/` 下
+SimplePlan是用于记录待办任务的一款挂件，开发的原因主要是想有日历视图。
 
-## 开发
+* 该挂件的任务分为三类：待做任务（todo），正在进行的任务（doing），已经做完的任务（done）
+* 每个任务都有自己的一些属性（名称、描述、时间等）
+* 通过看板视图和日历视图都能查看任务
+* 任务数据存放在块的属性中，所以千万别删除块。后面会增加导出功能。
 
-* widget.json
-* icon.png (160*160)
-* preview.png (1024*768)
-* README*.md
-* index.html
+目的是想做一个待办任务/清单，可以和siyuan深度融合的挂件（插件，看后面支不支持）。
 
-## widget.json
+有问题或建议可以提Issues
 
-```json
-{
-  "name": "widget-sample",
-  "author": "Vanessa",
-  "url": "https://github.com/siyuan-note/widget-sample",
-  "version": "0.0.3",
-  "minAppVersion": "2.8.8",
-  "displayName": {
-    "default": "Widget Sample",
-    "zh_CN": "挂件示例"
-  },
-  "description": {
-    "default": "This is a widget sample",
-    "zh_CN": "这是一个挂件示例"
-  },
-  "readme": {
-    "default": "README.md",
-    "zh_CN": "README_zh_CN.md"
-  },
-  "funding": {
-    "openCollective": "",
-    "patreon": "",
-    "github": "",
-    "custom": [
-      "https://ld246.com/sponsor"
-    ]
-  }
-}
-```
+## 预览
 
-* `name`：挂件名称，必须和库名一致，且全局唯一（集市中不能有重名挂件）
-* `author`：挂件作者名
-* `url`：挂件仓库地址
-* `version`：挂件版本号，建议遵循 [semver](https://semver.org/lang/zh-CN/) 规范
-* `minAppVersion`：挂件支持的最低思源笔记版本号
-* `displayName`：模板显示名称，主要用于模板集市列表中显示，支持多语言
-    * `default`：默认语言，必须存在
-    * `zh_CN`、`en_US` 等其他语言：可选，建议至少提供中文和英文
-* `description`：挂件描述，主要用于挂件集市列表中显示，支持多语言
-    * `default`：默认语言，必须存在
-    * `zh_CN`、`en_US` 等其他语言：可选，建议至少提供中文和英文
-* `readme`：自述文件名，主要用于挂件集市详情页中显示，支持多语言
-    * `default`：默认语言，必须存在
-    * `zh_CN`、`en_US` 等其他语言：可选，建议至少提供中文和英文
-* `funding`：挂件赞助信息
-    * `openCollective`：Open Collective 名称
-    * `patreon`：Patreon 名称
-    * `github`：GitHub 登录名
-    * `custom`：自定义赞助链接列表
+### 看板视图
 
-## 打包
+![image-20231201111743261](D:\Users\xiaojiawang\Desktop\myself\笔记\IntronSiyuan\data\widgets\SimplePlan\README_zh_CN.assets\image-20231201111743261.png)
 
-无论使用何种方式编译打包，我们最终需要生成一个 package.zip，它至少包含如下文件：
+### 日历视图
 
-* icon.png
-* preview.png
-* README*.md
-* widget.json
-* index.html
+![image-20231201111823547](D:\Users\xiaojiawang\Desktop\myself\笔记\IntronSiyuan\data\widgets\SimplePlan\README_zh_CN.assets\image-20231201111823547.png)
 
-## 上架集市
 
-* 生成 package.zip
-* 在 GitHub 上创建一个新的发布，使用挂件版本号作为 “Tag
-  version”，示例 https://github.com/siyuan-note/widget-sample/releases
-* 上传 package.zip 作为二进制附件
-* 提交发布
 
-如果是第一次发布版本，还需要创建一个 PR 到 [Community Bazaar](https://github.com/siyuan-note/bazaar) 社区集市仓库，修改该库的
-widgets.json。该文件是所有社区挂件库的索引，格式为：
-
-```json
-{
-  "repos": [
-    "username/reponame"
-  ]
-}
-```
-
-PR 被合并以后集市会通过 GitHub Actions 自动更新索引并部署。后续发布新版本挂件时只需要按照上述步骤创建新的发布即可，不需要再
-PR 社区集市仓库。
-
-正常情况下，社区集市仓库每隔 1 小时会自动更新索引并部署，可在 https://github.com/siyuan-note/bazaar/actions 查看部署状态。
