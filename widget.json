@@ -1,0 +1,32 @@
+{
+  "name": "SimplePlan",
+  "author": "ScottXjw",
+  "url": "https://github.com/siyuan-note/widget-sample",
+  "version": "0.0.1",
+  "minAppVersion": "2.8.8",
+  "displayName": {
+    "default": "SimplePlan",
+    "zh_CN": "快捷计划"
+  },
+  "description": {
+    "default": "SimplePlan is a simple and efficient to-do list software that provides you with a seamless experience of easily managing tasks and plans. From creating tasks in real-time to quickly viewing schedules, everything has become effortless.",
+    "zh_CN": "快捷计划是一款简单而高效的待办清单软件，为您提供轻松管理任务和计划的无缝体验。从即时创建任务到快速查看日程，一切都变得轻而易举。"
+  },
+  "readme": {
+    "default": "README.md",
+    "zh_CN": "README_zh_CN.md"
+  },
+  "funding": {
+    "openCollective": "",
+    "patreon": "",
+    "github": "",
+    "custom": [
+      ""
+    ]
+  },
+  "keywords":{
+	"待办清单",
+	"todo",
+	"日程管理"
+  }
+}
