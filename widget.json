@@ -13,7 +13,7 @@
     "zh_CN": "快捷计划是一款简单而高效的待办清单软件，为您提供轻松管理任务和计划的无缝体验。从即时创建任务到快速查看日程，一切都变得轻而易举。"
   },
   "readme": {
-    "default": "README.md",
+    "default": "README_zh_CN.md",
     "zh_CN": "README_zh_CN.md"
   },
   "funding": {
