@@ -19,11 +19,11 @@ SimplePlan是用于记录待办任务的一款挂件，开发的原因主要是�
 
 ### 看板视图
 
-![image-20231201111743261](D:\Users\xiaojiawang\Desktop\myself\笔记\IntronSiyuan\data\widgets\SimplePlan\README_zh_CN.assets\image-20231201111743261.png)
+![image-20231201111743261](.\README_zh_CN.assets\image-20231201111743261.png)
 
 ### 日历视图
 
-![image-20231201111823547](D:\Users\xiaojiawang\Desktop\myself\笔记\IntronSiyuan\data\widgets\SimplePlan\README_zh_CN.assets\image-20231201111823547.png)
+![image-20231201111823547](\README_zh_CN.assets\image-20231201111823547.png)
 
 
 
