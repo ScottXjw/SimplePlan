@@ -17,10 +17,10 @@
         </el-button-group>
       </template>
 
-      <template style="padding: 1px;" #date-cell="{ data }">
+      <template  #date-cell="{ data }">
 
-        <el-container>
-          <el-aside width="1.3rem">{{ new Date(data.day).getDate() }}</el-aside>
+        <el-container >
+          <el-aside width="1.3rem" style="font-size: 13px;">{{ new Date(data.day).getDate() }}</el-aside>
 
           <el-main style="padding: 0px;
                                       max-height: 4.5rem;
@@ -70,7 +70,9 @@
                       </el-descriptions>
                       <template #reference>
                         <el-button class="ellipsis-tag" type="info" plain>
-                          {{ task.name }}
+                          <div  class="todo-text1">
+                                {{ task.name }}
+                          </div>
                         </el-button>
                       </template>
                     </el-popover>
@@ -149,6 +151,22 @@ export default {
   padding: 1rem;
   max-height: 1.5rem;
 }
+
+.todo-text1 {
+    text-align: center;
+    /* 文本居中对齐 */
+    white-space: nowrap;
+    /* 不换行 */
+    overflow: hidden;
+    /* 隐藏超出容器的部分 */
+    text-overflow: ellipsis;
+    /* 超出时显示省略号 */
+    max-width: 4em;
+    /* 设置宽度为 90%（根据需要进行调整） */
+    /* margin-top: 5px; */
+    margin: auto;
+}
+
 </style>
     
     

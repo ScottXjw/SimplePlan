@@ -48,8 +48,10 @@
 
                 <template #reference >
                     <div>
-                        <el-button class="todo-show"  @click="task.boardSet.isShowContent = !task.boardSet.isShowContent">
-                        {{task.name }}
+                        <el-button style="width: 90%;" @click="task.boardSet.isShowContent = !task.boardSet.isShowContent">
+                            <div  class="todo-text">
+                                {{ task.name }}
+                            </div>
                         </el-button>
                     </div>
 
@@ -137,9 +139,7 @@ export default {
 
 
 <style>
-.todo-show {
-    display: block;
-    /* 确保按钮作为块级元素 */
+.todo-text {
     text-align: center;
     /* 文本居中对齐 */
     white-space: nowrap;
@@ -148,7 +148,7 @@ export default {
     /* 隐藏超出容器的部分 */
     text-overflow: ellipsis;
     /* 超出时显示省略号 */
-    width: 90%;
+    max-width: 13em;
     /* 设置宽度为 90%（根据需要进行调整） */
     /* margin-top: 5px; */
     margin: auto;
