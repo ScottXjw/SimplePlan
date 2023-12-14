@@ -13,7 +13,7 @@ SimplePlan是用于记录待办任务的一款挂件，开发的原因主要是�
 
 目的是想做一个待办任务/清单，可以和siyuan深度融合的挂件（插件，看后面支不支持）。
 
-有问题或建议可以提Issues
+有问题或建议可以提Issues(https://github.com/ScottXjw/SimplePlan/issues)，我会尽快更新
 
 ## 预览
 
