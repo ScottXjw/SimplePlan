@@ -31,6 +31,15 @@ SimplePlan是用于记录待办任务的一款挂件，开发的原因主要是�
 
 # 更新历史
 
+## v0.0.8
+
+修复已知的bug
+
+### todo功能
+
+- [ ] 给待办任务加✅选择框  from 用户**[pisceswb](https://github.com/pisceswb)**
+- [ ] 同类型任务支持拖动 from 用户**[qq79248314](https://github.com/qq79248314)**
+
 ## v0.0.7
 
 新增删除按钮
