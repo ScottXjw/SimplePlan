@@ -89,12 +89,15 @@ export function modifyTask(tasks, oldTasksState, task) {
 
 // 删除
 export function deleteTask(tasks, oldTasksState, task) {
+    console.log("debug");
     let tasksList = tasks.get(oldTasksState);
     let taskIndex = tasksList.findIndex(item => item.id === task.id);
-
     if (taskIndex !== -1) {
         tasksList.splice(taskIndex, 1);
     }
+
+    putTasks(tasks)
+    
     return tasks;
 }
 

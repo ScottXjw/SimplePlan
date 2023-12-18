@@ -39,6 +39,7 @@
 
                 <div v-if="!task.boardSet.isEditingContent" style="text-align: right; margin: 0">
                     <el-button @click="task.boardSet.isShowContent = false">取消</el-button>
+                    <el-button @click="deleteT(task)">删除</el-button>
                     <el-button type="primary" @click="openEditView(task)">修改</el-button>
                 </div>
                 <div v-else style="text-align: right; margin: 0">
@@ -64,7 +65,7 @@
    
 
 <script>
-import { modifyTask, formatTime } from "../../utils/util.js";
+import { modifyTask, formatTime ,deleteTask} from "../../utils/util.js";
 import { ElMessage } from 'element-plus'
 //子组件接收
 export default {
@@ -121,6 +122,12 @@ export default {
             editedTask.updateTime = task.updateTime;
             editedTask.deadline = task.deadline;
             editedTask.desc = task.desc;
+        },
+        deleteT(task) {
+            task.boardSet.isShowContent = false
+            this.tasks = deleteTask(this.tasks, task.state, task);
+            console.log(this.tasks)
+            this.updateTasksNow();
         }
     },
     beforeMount: function () {
