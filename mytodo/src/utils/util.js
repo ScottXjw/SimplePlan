@@ -1,4 +1,4 @@
-import {putTasksContents} from './siyuan-api.js'
+import { putTasksContents } from './siyuan-api.js'
 
 export function initTask(taskConfig = {}) {
     const {
@@ -8,11 +8,6 @@ export function initTask(taskConfig = {}) {
         updateTime = new Date().toLocaleString(),
         deadline = '',
         desc = '自定义的描述/备注/记录等',
-        boardSet = {
-            isShowContent: false,
-            isEditingContent: false,
-            editedTask: {},
-        },
     } = taskConfig;
 
     return {
@@ -23,7 +18,7 @@ export function initTask(taskConfig = {}) {
         updateTime,
         deadline,
         desc,
-        boardSet,
+
     };
 }
 
@@ -36,14 +31,9 @@ export function addTask(tasks, task) {
         name: task.name,
         state: task.state,
         createTime: (task.createTime == '' || task.createTime == undefined) ? new Date().toLocaleString() : task.createTime,
-        updateTime: (task.updateTime == '' || task.updateTime == undefined) ? new Date().toLocaleString() : task.updateTime,
+        updateTime:  new Date().toLocaleString(),
         deadline: task.deadline,
         desc: task.desc,
-        boardSet: {
-            isShowContent: false,
-            isEditingContent: false,
-            editedTask:{},
-        }
     }
     //在tasks中增加task元素
     tasks.get(tempTask.state).push(tempTask);
@@ -61,6 +51,9 @@ export function modifyTask(tasks, oldTasksState, task) {
     // tasks = addTask(tasks,task);
     // 遍历tasks，找到和task.id一样的内容，修改内容
 
+    // 遍历tasks，找到和task.id一样的内容，修改内容
+
+
     // 如果task的state和oldTasksState一样，那就只需要修改
     // 如果不一样就需要删除增加
     if (task.state === oldTasksState) {
@@ -69,16 +62,29 @@ export function modifyTask(tasks, oldTasksState, task) {
             if (taskList[i].id === task.id) {
                 taskList[i].name = task.name;
                 taskList[i].state = task.state;
-                taskList[i].createTime = (task.createTime == '' || task.createTime == undefined) ? new Date().toLocaleString() : task.createTime;
-                taskList[i].updateTime = (task.updateTime == '' || task.updateTime == undefined) ? new Date().toLocaleString(): task.updateTime;
+                taskList[i].createTime = task.createTime;
+                taskList[i].updateTime = new Date().toLocaleString();
                 taskList[i].deadline = task.deadline;
                 taskList[i].desc = task.desc;
             }
         }
     } else {
+        if(oldTasksState !== "todo" && oldTasksState !== "doing" && oldTasksState !== "done"){
+            //找到之前的state,在tasks中
+            //遍历tasks,这个map
+            for (const [key, value] of tasks) {
+                for (let i = 0; i < value.length; i++) {
+                    if (value[i].id === task.id) {
+                        oldTasksState = key;
+                        break;
+                    }
+                }
+            }
+        }
         deleteTask(tasks, oldTasksState, task);
         addTask(tasks, task);
     }
+
 
 
     putTasks(tasks)
@@ -89,7 +95,7 @@ export function modifyTask(tasks, oldTasksState, task) {
 
 // 删除
 export function deleteTask(tasks, oldTasksState, task) {
-    console.log("debug");
+    // console.log("debug");
     let tasksList = tasks.get(oldTasksState);
     let taskIndex = tasksList.findIndex(item => item.id === task.id);
     if (taskIndex !== -1) {
@@ -97,7 +103,7 @@ export function deleteTask(tasks, oldTasksState, task) {
     }
 
     putTasks(tasks)
-    
+
     return tasks;
 }
 
@@ -133,35 +139,42 @@ export function formatTime(timeString) {
     let minutes = time.getMinutes().toString().padStart(2, '0'); // 格式化为两位数
     let seconds = time.getSeconds().toString().padStart(2, '0'); // 格式化为两位数
     // 组合成所需的时间格式，例如：YYYY-MM-DD HH:MM:SS
-    return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+    return `${year}/${month}/${day} ${hours}:${minutes}:${seconds}`;
 }
 
 
 
 export function Enum(baseEnum) {
     return new Proxy(baseEnum, {
-      get(target, name) {
-        if (!baseEnum.hasOwnProperty(name)) {
-          throw new Error(`"${name}" value does not exist in the enum`)
+        get(target, name) {
+            if (!baseEnum.hasOwnProperty(name)) {
+                throw new Error(`"${name}" value does not exist in the enum`)
+            }
+            return baseEnum[name]
+        },
+        set(target, name, value) {
+            throw new Error('Cannot add a new value to the enum')
         }
-        return baseEnum[name]
-      },
-      set(target, name, value) {
-        throw new Error('Cannot add a new value to the enum')
-      }
     })
-  }
+}
 
 export const TaskStateEnum = Enum({
     Todo: 'todo',
     Doing: 'doing',
-    Done: 'done'
-  })
+    Done: 'done',
+})
+
+export const TaskStateColorMap = new Map();
+TaskStateColorMap.set("todo","blue")
+TaskStateColorMap.set("doing","red")
+TaskStateColorMap.set("done","grey")
+
+
 
 // 获取挂件所在块信息
 export function getWidgetBlockInfo() {
     let widgetBlockEle = window.frameElement.parentElement.parentElement;
-    
+
     let widgetBlkID = widgetBlockEle.getAttribute('data-node-id');
     return {
         id: widgetBlkID  //挂件块id
@@ -169,5 +182,5 @@ export function getWidgetBlockInfo() {
 }
 
 export function putTasks(tasks) {
-    const rep = putTasksContents(getWidgetBlockInfo().id,tasks);
+    const rep = putTasksContents(getWidgetBlockInfo().id, tasks);
 }

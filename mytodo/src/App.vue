@@ -19,7 +19,7 @@
 import BoardView from './components/BoardView.vue';
 import Calendar from './components/Calendar.vue';
 import { getTasksContents, putTasksContents } from './utils/siyuan-api.js';
-import { getWidgetBlockInfo } from './utils/util.js';
+import { getWidgetBlockInfo,putTasks } from './utils/util.js';
 // App掌握所有的Tasks，所有的修改都在这里
 //获取tasks的值
 
@@ -28,9 +28,11 @@ tasks.set("todo", new Array());
 tasks.set("doing", new Array());
 tasks.set("done", new Array());
 
+// let blockId = "20231218154508-sr0xvlc"
 let blockId = getWidgetBlockInfo()
-// 设置高度
-window.frameElement.style.height = '800px';
+window.frameElement.style.height = '800px'; // 设置高度
+
+
 
 export default {
   components: {
@@ -58,15 +60,16 @@ export default {
       Object.assign(this.tasks.get("doing"), tasksObject.doing);
       Object.assign(this.tasks.get("done"), tasksObject.done);
 
+      // console.log(this.tasks);
+      
     },
   },
   beforeMount: function () {
-    console.group('------APP  created挂载前状态------');
-    console.log(new Date().toLocaleString())
-    console.groupEnd("end")
-
+    // console.group('------APP  created挂载前状态------');
+    // console.log(new Date().toLocaleString())
+    // console.groupEnd("end")
     this.getTasks()
-  }
+  },   
 }
 </script>
  

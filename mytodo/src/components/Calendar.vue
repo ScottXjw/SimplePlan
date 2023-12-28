@@ -1,172 +1,154 @@
 <template>
-  <el-config-provider :locale="locale">
-    <el-calendar ref="calendar" v-model="selectedDate">
-      <template #header="{ date }">
-        <span>
-          <el-date-picker v-model="selectedDate" type="month" placeholder="Pick a month" format="YYYY年MM月" />
-        </span>
+  <a-calendar v-model:value="value" :locale="locale">
+    <template #dateCellRender="{ current }">
+      <ul ref="ulElement" class="events">
+        <li v-for="item in getListData(current)" :key="item.id">
 
-        <el-button-group style="align-items: center;">
-          <el-button @click="selectDate('prev-month')">
-            上个月
-          </el-button>
-          <el-button @click="selectDate('today')">今天</el-button>
-          <el-button @click="selectDate('next-month')">
-            下个月
-          </el-button>
-        </el-button-group>
-      </template>
+          <a-popover trigger="hover" placement="right">
+            <template #content>
+              <a-descriptions size="small" :column="1" bordered>
+                <a-descriptions-item class="custom-calendar-descriptions-item" label="任务名称">
+                  {{ item.name }}
 
-      <template  #date-cell="{ data }">
+                </a-descriptions-item>
+                <a-descriptions-item class="custom-calendar-descriptions-item" label="任务状态">
+                  {{ item.state }}
+                </a-descriptions-item>
 
-        <el-container >
-          <el-aside width="1.3rem" style="font-size: 13px;">{{ new Date(data.day).getDate() }}</el-aside>
+                <a-descriptions-item v-if="item.deadline !== ''" class="custom-calendar-descriptions-item" label="截止时间">
+                  {{ item.deadline }}
+                </a-descriptions-item>
 
-          <el-main style="padding: 0px;
-                                      max-height: 4.5rem;
-                                      max-width: 15rem;">
-            <el-scrollbar>
-              <div v-for="[state, tasksList] of tasks">
-                <div v-for="task in tasksList">
+                <a-descriptions-item class="custom-calendar-descriptions-item" label="任务描述">
+                  {{ item.desc }}
+                </a-descriptions-item>
+              </a-descriptions>
+              <div style="font-size: 10px;">创建时间: {{ item.createTime }}<br />更新时间:
+                {{ item.updateTime }} </div>
+            </template>
+            <div class="todo-text1"
+              :style="{ width: state.ulWidth, overflow: 'hidden', 'text-overflow': 'ellipsis', 'white-space': 'nowrap', color:TaskStateColorMap.get(item.state)}">
+              {{ item.name }}</div>
+          </a-popover>
+        </li>
+      </ul>
+    </template>
 
-                  <el-row v-if="isSameDay(task.createTime, data.date)" style="margin-left: 0px;margin-right: 0px "
-                    :gutter="10">
-
-                    <el-popover placement="left" title="任务详情" :width="350" trigger="hover">
-
-                      <el-descriptions :column=1 :colon="false">
-                        <el-descriptions-item label="任务名称">
-                          <span v-if="!task.boardSet.isEditingContent">{{ task.name }}</span>
-                          <el-input v-else v-model="task.boardSet.editedTask.name" @input="$forceUpdate()" type="text"
-                            placeholder="请输入文本"></el-input>
-                        </el-descriptions-item>
-                        <el-descriptions-item label="任务状态">
-
-                          <span v-if="!task.boardSet.isEditingContent">{{ task.state }}</span>
-                          <el-select v-else v-model="task.boardSet.editedTask.state" @change="$forceUpdate()">
-                            <el-option label="todo" value="todo"></el-option>
-                            <el-option label="doing" value="doing"></el-option>
-                            <el-option label="done" value="done"></el-option>
-                          </el-select>
-                        </el-descriptions-item>
-
-                        <el-descriptions-item label="创建时间">{{ formatTime(task.createTime) }}</el-descriptions-item>
-                        <el-descriptions-item label="更新时间">{{ formatTime(task.updateTime) }}</el-descriptions-item>
-
-                        <el-descriptions-item v-if="task.deadline != ''" label="截止时间">
-                          <span v-if="!task.boardSet.isEditingContent">{{ formatTime(task.deadline) }}</span>
-                          <div v-else class="block">
-                            <el-date-picker v-model="task.boardSet.editedTask.deadline" type="datetime"
-                              @input="$forceUpdate()" placeholder="选择日期时间">
-                            </el-date-picker>
-                          </div>
-                        </el-descriptions-item>
-
-                        <el-descriptions-item label="任务描述">
-                          <span v-if="!task.boardSet.isEditingContent">{{ task.desc }}</span>
-                          <el-input v-else type="textarea" placeholder="请输入文本" v-model="task.boardSet.editedTask.desc"
-                            :autosize="{ minRows: 4, maxRows: 7 }" @input="$forceUpdate()"></el-input>
-                        </el-descriptions-item>
-                      </el-descriptions>
-                      <template #reference>
-                        <el-button class="ellipsis-tag" type="info" plain>
-                          <div  class="todo-text1">
-                                {{ task.name }}
-                          </div>
-                        </el-button>
-                      </template>
-                    </el-popover>
-                  </el-row>
-                </div>
-              </div>
-            </el-scrollbar>
-          </el-main>
+    <template #monthCellRender="{ current }">
+      <a-flex justify="space-evenly" align="center">
+        <div v-for="item in getMonthData(current)">
+          <a-tag style="text-align: center;" :color="TaskStateColorMap.get(item[0])">{{ item[0] }}</a-tag>
+          <a-statistic style="text-align: center;" :value="item[1]">
+          </a-statistic>
+        </div>
+      </a-flex>
+    </template>
 
 
-        </el-container>
-
-
-      </template>
-
-
-    </el-calendar>
-  </el-config-provider>
+  </a-calendar>
 </template>
      
     
-<script lang="ts">
-import { ref } from 'vue'
-import type { CalendarDateType, CalendarInstance } from 'element-plus'
-import { modifyTask, formatTime } from "../utils/util.js";
-import zhCn from 'element-plus/dist/locale/zh-cn.mjs'
-
-
-
-export default {
-  props: ['appTasks'],
-  setup(props, context) {
-    const calendar = ref<CalendarInstance>()
-    const selectDate = (val: CalendarDateType) => {
-      if (!calendar.value) return
-      calendar.value.selectDate(val)
-    }
-    const selectedDate = ref<Date | null>(new Date()); // 这里可以是你想要显示的固定月份
-
-    return {
-      calendar,
-      selectDate,
-      locale: zhCn,
-      selectedDate,
-      tasks: props.appTasks, // 父组件传给子组件的值
-    }
+<script setup>
+import { ref, onMounted, onBeforeUnmount, reactive } from 'vue'
+// import type { CalendarDateType, CalendarInstance } from 'element-plus'
+import { TaskStateColorMap } from "../utils/util.js";
+import dayjs from 'dayjs';
+import 'dayjs/locale/zh-cn';
+const locale = ref({
+  lang: {
+    locale: "zh-cn",
+    month: '月',
+    year: '年',
   },
-  data() {
-    return {
+});
 
-    }
-  },
-  methods: {
-    isSameDay(date1String, date2) {
-      const date1 = new Date(date1String)
-      return (
-        date1.getFullYear() === date2.getFullYear() &&
-        date1.getMonth() === date2.getMonth() &&
-        date1.getDate() === date2.getDate()
-      )
-    },
-    formatTime,
-  }
+const props = defineProps({
+  appTasks: {},
+})
+
+const value = ref();
+
+const getListData = value => {
+  let listData = new Array();
+  props.appTasks.forEach(
+    (item) => item.forEach(
+      (item1) => {
+        //判断item的时间和value的天是否相同
+        // console.log(value.date(),value.format("DD/MM/YYYY"))
+        if (dayjs(item1.createTime).format("DD/MM/YYYY") == value.format("DD/MM/YYYY")) {
+          listData.push(item1);
+        }
+      }
+    )
+  )
+  // console.log(listData);
+  return listData || [];
 }
+
+const getMonthData = value => {
+  let listData = new Map();
+  listData.set("todo", 0);
+  listData.set("doing", 0);
+  listData.set("done", 0);
+  props.appTasks.forEach(
+    (item) => {
+
+      item.forEach(
+        (item1) => {
+          //判断item的时间和value的天是否相同
+          // console.log(value.date(),value.format("DD/MM/YYYY"))
+          if (dayjs(item1.createTime).format("MM/YYYY") == value.format("MM/YYYY")) {
+            listData.set(item1.state, listData.get(item1.state) + 1);
+          }
+        }
+      )
+    }
+  )
+  console.log(listData);
+  return listData || [];
+
+}
+
+
+
+
+const ulElement = ref(null);
+const state = reactive({
+  ulWidth: "300px",
+});
+
+onBeforeUnmount(() => {
+  window.removeEventListener('resize', handleResize1);
+});
+onMounted(() => {
+  window.addEventListener('resize', handleResize1);
+  state.ulWidth = (ulElement.value.clientWidth - 17) + "px"
+});
+
+const handleResize1 = function () {
+  // console.log( ulElement.value.clientWidth)
+  state.ulWidth = (ulElement.value.clientWidth - 17) + "px"
+  // console.log(boxStyle.width)
+}
+
 </script>
      
 <style>
-.ellipsis-tag {
-  overflow: hidden;
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  text-overflow: ellipsis;
-  /* 显示省略号 */
-  width: 15rem;
-  /* 设置最大宽度，根据需要调整 */
-  padding: 1rem;
-  max-height: 1.5rem;
+.todo-text1:hover {
+  color: blue;
+  /* 鼠标悬停时的颜色 */
 }
 
-.todo-text1 {
-    text-align: center;
-    /* 文本居中对齐 */
-    white-space: nowrap;
-    /* 不换行 */
-    overflow: hidden;
-    /* 隐藏超出容器的部分 */
-    text-overflow: ellipsis;
-    /* 超出时显示省略号 */
-    max-width: 4em;
-    /* 设置宽度为 90%（根据需要进行调整） */
-    /* margin-top: 5px; */
-    margin: auto;
+.events {
+  list-style: none;
+  margin: 0;
+  padding: 0;
 }
-
+.custom-calendar-descriptions-item {
+    max-width: 20vmax;
+    /* text-align: center; */
+}
 </style>
     
     

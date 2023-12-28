@@ -1,52 +1,52 @@
 <template>
-    <el-dialog class="add-from-dialog" v-model="isShowForm" :show-close="true" @close="closeDialog">
+    <div>
+        <el-button type="primary" @click="showModal">
+            <el-icon>
+                <Plus />
+            </el-icon>
+        </el-button>
 
-        <el-form :model="taskDemo" label-width="100px" :rules="rules" ref="baseForm">
-            <el-form-item label="任务名称:" prop="name">
-                <el-input v-model="taskDemo.name"></el-input>
-            </el-form-item>
+        <a-modal v-model:open="open" title="新增任务" :footer="null">
 
-            <el-form-item label="任务状态:" prop="state">
-                <el-radio-group :disabled="stateOptions.disabled" v-model="taskState">
-                    <el-radio :label="'todo'">todo</el-radio>
-                    <el-radio :label="'doing'">doing</el-radio>
-                    <el-radio :label="'done'">done</el-radio>
-                </el-radio-group>
-            </el-form-item>
+            <a-form :model="taskDemo" :label-col="labelCol" :wrapper-col="wrapperCol" ref="formRef" :rules="rules">
+                <a-form-item label="任务名称" name="name">
+                    <a-input v-model:value="taskDemo.name" />
+                </a-form-item>
 
-            <el-form-item label="截止时间:">
-                <el-switch v-model="isSwitch" active-text="" inactive-text=""></el-switch>
-            </el-form-item>
+                <a-form-item label="任务状态">
+                    <a-radio-group v-model:value="taskDemo.state" :options="stateOptions">
 
-            <el-form-item v-if="isSwitch" :prop="isSwitch ? 'deadline' : []">
-                <el-col>
-                    <el-date-picker v-model="taskDemo.deadline" type="datetime" placeholder="选择日期时间"
-                        :default-time="defaultTime" />
-                </el-col>
-            </el-form-item>
+                    </a-radio-group>
+                </a-form-item>
+                <a-form-item label="截止时间">
+                    <a-date-picker v-model:value="taskDemo.deadline" show-time type="datetime" placeholder="选择日期和时间(可以不选)"
+                        style="width: 100%" value-format="YYYY/MM/DD HH:mm:ss" />
+                </a-form-item>
+                <a-form-item label="任务描述" name="desc">
+                    <a-textarea v-model:value="taskDemo.desc" :autoSize="{ minRows: 5, maxRows: 10 }" />
+                </a-form-item>
+                <a-form-item :wrapper-col="{ span: 14, offset: 4 }">
+                    <el-button type="primary" @click="handleOk">Create</el-button>
+                    <el-button style="margin-left: 10px" @click="handleCancel">Cancel</el-button>
+                </a-form-item>
+            </a-form>
 
-            <el-form-item label="描述:" prop="desc">
-                <el-input type="textarea" v-model="taskDemo.desc" :autosize="{ minRows: 5, maxRows: 10 }"
-                    placeholder="请输入内容"></el-input>
-            </el-form-item>
-
-            <el-form-item>
-                <el-button type="primary" @click="onSubmit">立即创建</el-button>
-                <el-button @click="showForm = false">取消</el-button>
-            </el-form-item>
-        </el-form>
-    </el-dialog>
+        </a-modal>
+    </div>
 </template>
    
-<script>
+
+<script setup>
 import { reactive } from "vue";
 import { TaskStateEnum, initTask } from "../../utils/util.js";
-let defaultTime = new Date(2000, 1, 1, 12, 0, 0);
+import { ref } from 'vue';
+import { toRaw } from 'vue';
 
-
-const rules = reactive({
+const open = ref(false);
+const formRef = ref();
+const rules = {
     name: [
-        { required: true, message: '请输入任务名称', trigger: 'blur' },
+        { required: true, message: '请输入任务名称', trigger: 'blur' }
     ],
     state: [
 
@@ -54,75 +54,74 @@ const rules = reactive({
     desc: [
         // { required: true, message: '请输入任务描述', trigger: 'blur' },
     ],
+}
+
+
+const emits = defineEmits(['add-task']);
+const props = defineProps({
+    state: {
+        type: String,
+        default: TaskStateEnum.Todo
+    },
 })
 
 
-export default {
-    props: {
-        showForm: {
-            type: Boolean,
-            default: false
-        },
-        state: {
-            type: String,
-            default: TaskStateEnum.Todo
-        },
-    },
-    computed: {
-        isShowForm() {
-            return this.showForm;
-        },
-        taskState() {
-            return this.state;
-        },
-    },
-    data() {
-        return {
-            taskDemo: initTask({ state: this.state }),
-            stateOptions: {
-                radio: 'todo',
-                disabled: true,
-            },  //状态选择器
-            isSwitch: true, //是否启用截止日期
-            defaultTime,
-            rules,
-        }
-    },
-    methods: {
-        onSubmit() {
 
-            // 表单验证
-            this.$refs.baseForm.validate(async (valid) => {
-                if (valid) {
-                    if(!this.isSwitch){
-                        this.taskDemo.deadline = '';
-                    }
-                    // 验证通过 
-                    // 触发事件将修改通知给父组件
-                    this.$emit('add-task', this.taskDemo);
-                    this.updateshowForm();
-                } else {
+const showModal = () => {
+    open.value = true;
+};
+const handleOk = () => {
+    //表单验证
+    formRef.value
+        .validate()
+        .then(() => {
+            //成功
 
-                }
-            }
-            );
-
-
-        },
-        updateshowForm() {
+            open.value = false;
+            //这里需要添加到tasks中
             // 触发事件将修改通知给父组件
-            this.$emit('update-showForm', false);
-        },
-        closeDialog() {
-            this.taskDemo = initTask()
-            this.updateshowForm();
-        },
-    },
-    beforeMount: function () {
-        console.log('------AddTaskForm beforeMount挂载前状态------');
+            // const temp = initTask({
+            //     name: taskDemo.name,
+            //     state: taskDemo.state,
+            //     deadline: taskDemo.deadline,
+            //     desc: taskDemo.desc,
+            // })
+            const temp = initTask(taskDemo)
+            // console.log('values', temp);
+            emits('add-task',temp)
+        })
+        .catch(error => {
+            console.log('error', error);
+        });
+
+};
+const handleCancel = () => {
+    open.value = false;
+};
+
+
+//编辑框中
+const taskDemo = reactive(initTask({ state: props.state }))
+
+const stateOptions = [
+    { label: 'Todo', value: 'todo', disabled: true },
+    { label: 'Doing', value: 'doing', disabled: true },
+    { label: 'Done', value: 'done', disabled: true },
+] //状态选择器
+
+//样式
+const labelCol = {
+    style: {
+        width: '150px',
     },
 };
+const wrapperCol = {
+    span: 14,
+};
+
 </script>
+
+
 <style>
 .add-from-dialog {
     width: 50%;

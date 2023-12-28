@@ -1,50 +1,47 @@
 <template>
   <el-row :gutter="20">
-    <TagAndButtonLayout :BoardTagTile="{ dynamicTagText: 'todo', boardTasks: tasks }" />
-    <TagAndButtonLayout :BoardTagTile="{ dynamicTagText: 'doing', boardTasks: tasks }" />
-    <TagAndButtonLayout :BoardTagTile="{ dynamicTagText: 'done', boardTasks: tasks }" />
+    <TasksTable :BoardTagTile="{ dynamicTagText: 'todo', boardTasks: props.appTasks }" @save-tasks="updateTasks" @delete-tasks="deleteTasks"/>
+    <TasksTable :BoardTagTile="{ dynamicTagText: 'doing', boardTasks: props.appTasks }" @save-tasks="updateTasks" @delete-tasks="deleteTasks"/>
+    <TasksTable :BoardTagTile="{ dynamicTagText: 'done', boardTasks: props.appTasks }" @save-tasks="updateTasks" @delete-tasks="deleteTasks"/>
   </el-row>
 
-  <el-row :gutter="20">
-    <TodoContent :boardTasks="tasks" :boardTitle="'todo'" @update-tasks="updateTasks" />
-    <TodoContent :boardTasks="tasks" :boardTitle="'doing'" @update-tasks="updateTasks" />
-    <TodoContent :boardTasks="tasks" :boardTitle="'done'" @update-tasks="updateTasks" />
-  </el-row>
+
+
 </template>
 
-<script>
-import TagAndButtonLayout from './board/TagAndButtonLayout.vue';
-import TodoContent from './board/TodoContent.vue';
 
-export default {
-  components: {
-    TagAndButtonLayout,
-    TodoContent
-  },
-  props: ['appTasks'],
-  setup(props, context) {
-    return {
-      tasks: props.appTasks // 父组件传给子组件的值
-    }
-  },
-  methods: {
-    updateTasks(newTasks) {
-      console.log('------updateTasks更新后状态------');
-      this.tasks = newTasks;
+<script setup>
 
-    },
-  },
-  beforeMount: function () {
-    console.log('------Board beforeMount挂载前状态------');
-    // 初始化this.tasks,遍历Map中的元素,清除展示和编辑框图
-    for (var [key, value] of this.tasks) {
-      for (var index in value) {
-        value[index].boardSet.isShowContent = false;
-        value[index].boardSet.isEditingContent = false;
-      }
-    }
-  },
+import TasksTable from './board/TasksTable.vue';
+import { onBeforeMount } from 'vue';
+import {modifyTask,deleteTask} from '../utils/util.js'
+const props = defineProps({
+  appTasks: {},
+})
+
+const updateTasks = function (newTasks) {
+  // console.log('------updateTasks更新后状态------');
+  modifyTask(props.appTasks, "",newTasks);
 }
+
+
+const deleteTasks = function (newTasks) {
+  // console.log('------删除后状态------');
+  deleteTask(props.appTasks, newTasks.state,newTasks);
+}
+
+onBeforeMount(() => {
+  // console.log('------Board onBeforeMount挂载前状态------');
+  // for (const [key, value] of props.appTasks) {
+  //   for (const index in value) {
+  //     value[index].boardSet.isShowContent = false;
+  //     value[index].boardSet.isEditingContent = false;
+  //   }
+  // }
+});
+
+
+
 </script>
    
 <style></style>
