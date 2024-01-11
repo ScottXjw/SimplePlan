@@ -8,6 +8,7 @@ export function initTask(taskConfig = {}) {
         updateTime = new Date().toLocaleString(),
         deadline = '',
         desc = '自定义的描述/备注/记录等',
+        siyuanlink = [],
     } = taskConfig;
 
     return {
@@ -18,7 +19,7 @@ export function initTask(taskConfig = {}) {
         updateTime,
         deadline,
         desc,
-
+        siyuanlink,
     };
 }
 
@@ -34,6 +35,7 @@ export function addTask(tasks, task) {
         updateTime:  new Date().toLocaleString(),
         deadline: task.deadline,
         desc: task.desc,
+        siyuanlink:task.siyuanlink
     }
     //在tasks中增加task元素
     tasks.get(tempTask.state).push(tempTask);
@@ -66,6 +68,7 @@ export function modifyTask(tasks, oldTasksState, task) {
                 taskList[i].updateTime = new Date().toLocaleString();
                 taskList[i].deadline = task.deadline;
                 taskList[i].desc = task.desc;
+                taskList[i].siyuanlink = task.siyuanlink;
             }
         }
     } else {

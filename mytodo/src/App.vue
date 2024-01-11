@@ -1,5 +1,5 @@
 <template>
-  <el-menu default-active="/boardView" class="el-menu-demo" mode="horizontal" :ellipsis="false" router>
+  <el-menu default-active="/boardView" style="background: transparent;" mode="horizontal" :ellipsis="false" router>
     <el-menu-item index="boardView">看板</el-menu-item>
     <el-menu-item index="calendar">日历</el-menu-item>
     <div class="flex-grow"></div>
@@ -19,7 +19,8 @@
 import BoardView from './components/BoardView.vue';
 import Calendar from './components/Calendar.vue';
 import { getTasksContents, putTasksContents } from './utils/siyuan-api.js';
-import { getWidgetBlockInfo,putTasks } from './utils/util.js';
+import { getWidgetBlockInfo, putTasks, initTask } from './utils/util.js';
+
 // App掌握所有的Tasks，所有的修改都在这里
 //获取tasks的值
 
@@ -48,7 +49,8 @@ export default {
     async getTasks() {
       let response_data = await getTasksContents(this.blockId.id)
 
-      while (response_data.code == 500 || !response_data.message.data.hasOwnProperty("custom-tasksmap") ) {
+      while (response_data.code == 500 || !response_data.message.data.hasOwnProperty("custom-tasksmap")) {
+
         await putTasksContents(this.blockId.id, this.tasks);
         response_data = await getTasksContents(this.blockId.id);
       }
@@ -56,12 +58,19 @@ export default {
       //将response转成对象
       let tasksObject = JSON.parse(response_data.message.data["custom-tasksmap"]);
 
-      Object.assign(this.tasks.get("todo"), tasksObject.todo);
-      Object.assign(this.tasks.get("doing"), tasksObject.doing);
-      Object.assign(this.tasks.get("done"), tasksObject.done);
+      //数据格式兼容
+      tasksObject.todo.forEach(element => {
+        this.tasks.get("todo").push(initTask(element))
+      });
+      tasksObject.doing.forEach(element => {
+        this.tasks.get("doing").push(initTask(element))
+      });
+      tasksObject.done.forEach(element => {
+        this.tasks.get("done").push(initTask(element))
+      });
 
-      // console.log(this.tasks);
-      
+      putTasks(this.tasks)
+
     },
   },
   beforeMount: function () {
@@ -69,7 +78,8 @@ export default {
     // console.log(new Date().toLocaleString())
     // console.groupEnd("end")
     this.getTasks()
-  },   
+  },
+
 }
 </script>
  

@@ -1,9 +1,9 @@
 <template>
     <el-col   :span="8">
-        <a-table ref="tableRef" :data-source="dataSource" :customRow="customRow" :pagination="false" size="small" tableLayout="fixed">
+        <a-table ref="tableRef" style="background: transparent;" :data-source="dataSource" :customRow="customRow" :pagination="false" size="small" tableLayout="fixed">
             <a-table-column  key="nameKey" data-index="name" >
-                <template #title>
-                    <a-flex justify="space-between" align="center">
+                <template #title >
+                    <a-flex justify="space-between" align="center" >
                         <a-tag :color="TaskStateColorMap.get(BoardTagTile.dynamicTagText)">{{ BoardTagTile.dynamicTagText }}</a-tag>
                         <AddTaskForm :state="BoardTagTile.dynamicTagText" @add-task="addTaskTemp" />
                     </a-flex>
@@ -11,13 +11,10 @@
 
                 <template #default="{ record }" >
                     
-                    <a-checkbox v-if="record.state != 'done'" @change="onCheckChange($event,record)" class="custom-checkbox">
+                    <a-checkbox  :checked="record.state == 'done'"  @change="onCheckChange($event,record)" class="custom-checkbox">
                         <TaskPopover :TaskPopover_indata="{ task: record }" v-model:tableUlWidth="tableUlWidth" @save-task="saveChangeTask"
                             @delete-task="deleteTask" />
                     </a-checkbox>
-
-                    <TaskPopover v-else :TaskPopover_indata="{ task: record}" v-model:tableUlWidth="tableUlWidth" @save-task="saveChangeTask"
-                        @delete-task="deleteTask" />
                     
                 </template>
             </a-table-column>
@@ -42,7 +39,7 @@ const props = defineProps({
 })
 
 
-const onCheckChange = (e,task) => {
+const onCheckChange = function  (e,task) {
     if (e.target.checked){
         //修改当前task的状态
         task.state = 'done';
@@ -78,6 +75,7 @@ let change2 = null; // 目标数据序号
 let dataSource = reactive(props.BoardTagTile.boardTasks.get(props.BoardTagTile.dynamicTagText));
 
 const addTaskTemp = function (newValue) {
+    // console.log(newValue)
     addTask(props.BoardTagTile.boardTasks, newValue)
 }
 
@@ -162,6 +160,10 @@ const customRow = function (record, index) {
     zoom: 100%;
 
 }
+.ant-table-cell {
+   background: transparent !important;
+}
+
 </style>
   
   

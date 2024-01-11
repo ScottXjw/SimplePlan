@@ -6,7 +6,7 @@
         <a @click="save"><el-icon><Select /></el-icon></a>
     </div>
     <div v-else>
-        <a-badge status="processing" :text=value_desc />
+        <a-badge status="processing" :color="TaskStateColorMap.get(EditDescriptionsItems_indata.value)" :text=value_desc />
         <!-- <a-divider type="vertical" style="height: 60px; background-color: #7cb305" /> -->
         <a @click="edit"><el-icon><Edit /></el-icon></a>
     </div>
@@ -16,6 +16,7 @@
 
 <script setup>
 import { ref, reactive } from 'vue';
+import { TaskStateColorMap } from "../../utils/util.js";
 
 const emits = defineEmits(['save-item']);
 const props = defineProps({

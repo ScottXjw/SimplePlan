@@ -1,5 +1,5 @@
 <template>
-  <el-row :gutter="20">
+  <el-row :gutter="20" >
     <TasksTable :BoardTagTile="{ dynamicTagText: 'todo', boardTasks: props.appTasks }" @save-tasks="updateTasks" @delete-tasks="deleteTasks"/>
     <TasksTable :BoardTagTile="{ dynamicTagText: 'doing', boardTasks: props.appTasks }" @save-tasks="updateTasks" @delete-tasks="deleteTasks"/>
     <TasksTable :BoardTagTile="{ dynamicTagText: 'done', boardTasks: props.appTasks }" @save-tasks="updateTasks" @delete-tasks="deleteTasks"/>

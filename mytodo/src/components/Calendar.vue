@@ -1,8 +1,8 @@
 <template>
-  <a-calendar v-model:value="value" :locale="locale">
+  <a-calendar v-model:value="value" :locale="locale" >
     <template #dateCellRender="{ current }">
-      <ul ref="ulElement" class="events">
-        <li v-for="item in getListData(current)" :key="item.id">
+      <ul ref="ulElement" class="events" >
+        <li v-for="item in getListData(current)" :key="item.id" >
 
           <a-popover trigger="hover" placement="right">
             <template #content>
@@ -22,12 +22,43 @@
                 <a-descriptions-item class="custom-calendar-descriptions-item" label="任务描述">
                   {{ item.desc }}
                 </a-descriptions-item>
+
+
+                <a-descriptions-item v-if="item.siyuanlink != null && item.siyuanlink.length > 0"
+                  class="custom-calendar-descriptions-item" label="思源链接">
+
+                  <div v-for="block_id in item.siyuanlink">
+                    <!-- <a-tag color="processing">
+                      <a :href="'siyuan://blocks/' + block_id" style="">
+                        {{ value_title.get(block_id).length >
+                          40 ? value_title.get(block_id).slice(0, 40) + '...' : value_title.get(block_id) }}
+                      </a>
+                    </a-tag> -->
+
+                    <a-tooltip v-if="value_title.get(block_id) != null && value_title.get(block_id).length > 15"
+                      :title="value_title.get(block_id)" placement="right">
+                      <a-tag color="processing">
+                        <a :href="'siyuan://blocks/' + block_id">
+                          {{ `${value_title.get(block_id).slice(0, 15)}...` }}
+                        </a>
+                      </a-tag>
+                    </a-tooltip>
+                    <a-tag v-else color="processing">
+                      <a :href="'siyuan://blocks/' + block_id">
+                        {{ value_title.get(block_id) }}
+                      </a>
+                    </a-tag>
+
+
+                  </div>
+                </a-descriptions-item>
+
               </a-descriptions>
               <div style="font-size: 10px;">创建时间: {{ item.createTime }}<br />更新时间:
                 {{ item.updateTime }} </div>
             </template>
             <div class="todo-text1"
-              :style="{ width: state.ulWidth, overflow: 'hidden', 'text-overflow': 'ellipsis', 'white-space': 'nowrap', color:TaskStateColorMap.get(item.state)}">
+              :style="{ width: state.ulWidth, overflow: 'hidden', 'text-overflow': 'ellipsis', 'white-space': 'nowrap', color: TaskStateColorMap.get(item.state) }">
               {{ item.name }}</div>
           </a-popover>
         </li>
@@ -35,10 +66,10 @@
     </template>
 
     <template #monthCellRender="{ current }">
-      <a-flex justify="space-evenly" align="center">
-        <div v-for="item in getMonthData(current)">
+      <a-flex justify="space-evenly" align="center" >
+        <div v-for="item in getMonthData(current)" >
           <a-tag style="text-align: center;" :color="TaskStateColorMap.get(item[0])">{{ item[0] }}</a-tag>
-          <a-statistic style="text-align: center;" :value="item[1]">
+          <a-statistic style="text-align: center;" :value="item[1]" >
           </a-statistic>
         </div>
       </a-flex>
@@ -55,6 +86,8 @@ import { ref, onMounted, onBeforeUnmount, reactive } from 'vue'
 import { TaskStateColorMap } from "../utils/util.js";
 import dayjs from 'dayjs';
 import 'dayjs/locale/zh-cn';
+import { sql } from "../utils/siyuan-api.js";
+
 const locale = ref({
   lang: {
     locale: "zh-cn",
@@ -105,7 +138,7 @@ const getMonthData = value => {
       )
     }
   )
-  console.log(listData);
+  // console.log(listData);
   return listData || [];
 
 }
@@ -118,19 +151,45 @@ const state = reactive({
   ulWidth: "300px",
 });
 
-onBeforeUnmount(() => {
-  window.removeEventListener('resize', handleResize1);
-});
+
+const value_title = ref(new Map())
+const updateTitle = async () => {
+
+  props.appTasks.forEach(
+    (item) => {
+      item.forEach(
+        (item1) => {
+
+          //根据siyuanlink获取到title
+          item1.siyuanlink.forEach(async element_id => {
+            if (!value_title.value.hasOwnProperty(element_id)) {
+              const temp = await sql("select (REPLACE(REPLACE(CAST(type AS VARCHAR), 'd', '文档'), 'h', '标题') || '--' || content) as label from blocks where id = '" + element_id + "'");
+              value_title.value.set(element_id, temp.message.data[0].label)
+            }
+          });
+
+        }
+      )
+    }
+  )
+
+}
+
 onMounted(() => {
   window.addEventListener('resize', handleResize1);
   state.ulWidth = (ulElement.value.clientWidth - 17) + "px"
+  updateTitle();
 });
-
+onBeforeUnmount(() => {
+  window.removeEventListener('resize', handleResize1);
+});
 const handleResize1 = function () {
   // console.log( ulElement.value.clientWidth)
   state.ulWidth = (ulElement.value.clientWidth - 17) + "px"
   // console.log(boxStyle.width)
 }
+
+
 
 </script>
      
@@ -145,10 +204,12 @@ const handleResize1 = function () {
   margin: 0;
   padding: 0;
 }
+
 .custom-calendar-descriptions-item {
-    max-width: 20vmax;
-    /* text-align: center; */
+  max-width: 20vmax;
+  /* text-align: center; */
 }
+
 </style>
     
     

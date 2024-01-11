@@ -7,15 +7,13 @@
         </el-button>
 
         <a-modal v-model:open="open" title="新增任务" :footer="null">
-
             <a-form :model="taskDemo" :label-col="labelCol" :wrapper-col="wrapperCol" ref="formRef" :rules="rules">
                 <a-form-item label="任务名称" name="name">
-                    <a-input v-model:value="taskDemo.name" />
+                    <a-input ref="inputRef" @pressEnter="handleOk" v-model:value="taskDemo.name" />
                 </a-form-item>
 
                 <a-form-item label="任务状态">
                     <a-radio-group v-model:value="taskDemo.state" :options="stateOptions">
-
                     </a-radio-group>
                 </a-form-item>
                 <a-form-item label="截止时间">
@@ -24,6 +22,13 @@
                 </a-form-item>
                 <a-form-item label="任务描述" name="desc">
                     <a-textarea v-model:value="taskDemo.desc" :autoSize="{ minRows: 5, maxRows: 10 }" />
+                </a-form-item>
+                <a-form-item label="思源链接" name="siyuanlink">
+
+                    <a-select v-model:value="taskDemo.siyuanlink" mode="multiple" style="width: 100%"
+                        placeholder="Select Item..."  @search="searchSql"   :filter-option="false"
+                        :options="linkOptions"> </a-select>
+
                 </a-form-item>
                 <a-form-item :wrapper-col="{ span: 14, offset: 4 }">
                     <el-button type="primary" @click="handleOk">Create</el-button>
@@ -37,13 +42,16 @@
    
 
 <script setup>
-import { reactive } from "vue";
+import { reactive,watch } from "vue";
 import { TaskStateEnum, initTask } from "../../utils/util.js";
-import { ref } from 'vue';
-import { toRaw } from 'vue';
+import { ref, onUpdated } from 'vue';
+import { sql } from "../../utils/siyuan-api.js";
 
 const open = ref(false);
 const formRef = ref();
+
+
+
 const rules = {
     name: [
         { required: true, message: '请输入任务名称', trigger: 'blur' }
@@ -65,10 +73,24 @@ const props = defineProps({
     },
 })
 
+//编辑框中
+const taskDemo = reactive(initTask({ state: props.state }))
 
+
+let inputRef = ref();
+onUpdated(() => {
+    // 确保在尝试重置字段和设置焦点之前等待表单完全更新
+    formRef.value.$nextTick(() => {
+        formRef.value.resetFields();
+        const inputDom = inputRef.value;
+        inputDom.focus();
+    });
+});
 
 const showModal = () => {
+
     open.value = true;
+
 };
 const handleOk = () => {
     //表单验证
@@ -76,19 +98,12 @@ const handleOk = () => {
         .validate()
         .then(() => {
             //成功
-
             open.value = false;
             //这里需要添加到tasks中
             // 触发事件将修改通知给父组件
-            // const temp = initTask({
-            //     name: taskDemo.name,
-            //     state: taskDemo.state,
-            //     deadline: taskDemo.deadline,
-            //     desc: taskDemo.desc,
-            // })
             const temp = initTask(taskDemo)
             // console.log('values', temp);
-            emits('add-task',temp)
+            emits('add-task', temp)
         })
         .catch(error => {
             console.log('error', error);
@@ -99,9 +114,19 @@ const handleCancel = () => {
     open.value = false;
 };
 
+// link的操作
+const linkOptions = ref([]);
+//首先搜索好所有的标题
+const searchSql = async (inputData)=>{
+    // console.log(inputData)
+    // console.log(taskDemo.siyuanlink)
+    const temp = await sql("select (REPLACE(REPLACE(CAST(type AS VARCHAR), 'd', '文档'), 'h', '标题') || '--' || content) as label,id as value from blocks where (type = 'd' or type = 'h') and content LIKE'%"+inputData+"%'");
+    //  console.log(temp.message.data)
+    linkOptions.value = temp.message.data
+    // console.log(linkOptions.value)
+}
 
-//编辑框中
-const taskDemo = reactive(initTask({ state: props.state }))
+
 
 const stateOptions = [
     { label: 'Todo', value: 'todo', disabled: true },

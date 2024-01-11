@@ -17,7 +17,8 @@ export default defineConfig({
     }
   },
   build:{
-    outDir:'D:/Users/xiaojiawang/Desktop/myself/笔记/IntronSiyuan/data/widgets/SimplePlanDevlop'
+    outDir:'../../../笔记/IntronSiyuan/data/widgets/SimplePlanDevlop'
+    // outDir:'../../../笔记/IntronSiyuan/data/widgets/SimplePlan'
   }
 
 })
