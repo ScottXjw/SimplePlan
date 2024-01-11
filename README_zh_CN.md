@@ -13,7 +13,7 @@ SimplePlan是用于记录待办任务的一款挂件，开发的原因主要是�
 
 目的是想做一个待办任务/清单，可以和siyuan深度融合的挂件（插件，看后面支不支持）。
 
-有问题或建议可以提Issues(https://github.com/ScottXjw/SimplePlan/issues)，我会尽快更新
+有问题或建议可以提Issues(https://github.com/ScottXjw/SimplePlan/issues)，我会尽快更新。
 
 ## 预览
 
@@ -27,7 +27,7 @@ SimplePlan是用于记录待办任务的一款挂件，开发的原因主要是�
 
 单击任务会出现详细描述，点击编辑按钮可以编辑具体字段
 
-![image-20231228111430997](README_zh_CN.assets/image-20231228111430997.png)
+![image-20240111144238757](README_zh_CN.assets/image-20240111144238757.png)
 
 文本长度超过一定数值会省略
 
@@ -44,6 +44,23 @@ SimplePlan是用于记录待办任务的一款挂件，开发的原因主要是�
 ![image-20231228111728894](README_zh_CN.assets/image-20231228111728894.png)
 
 # 更新历史
+
+## v0.1.1
+
+1. 修复了已知的bug（在此特别感谢用户**[pisceswb](https://github.com/pisceswb)**）
+
+2. 新增功能
+
+   - 新增思源链接字段，可以搜索思源笔记中的**文档名**和**标题**，添加到任务中。
+   - 新增任务视图支持 使用Enter快捷键 激活Create按钮
+
+3. 页面修改
+
+   具体如下图，看板视图调整为透明
+
+   ![image-20240111152330827](README_zh_CN.assets/image-20240111152330827.png)
+
+
 
 ## v0.1.0
 
